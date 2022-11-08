@@ -2,60 +2,23 @@ package develop
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
-	"strings"
 )
 
-type Line struct {
-	Key   string
-	Words []string
-}
-
-func NewLine(str string, key int, sep string) *Line {
-	l := &Line{}
-	l.Words = strings.Split(str, sep)
-	if len(l.Words) > key {
-		l.Key = l.Words[key]
-	}
-	return l
-}
-
+// Sort : TODO
 func Sort() {
-	file, err := os.Open("input.txt") // TODO: pass filename as flag
+	file, err := os.Open("input.log") // TODO: pass filename as flag
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	lines := make([]*Line, 0)
 	s := bufio.NewScanner(file)
 	s.Split(bufio.ScanLines)
-	read := 0
-	for s.Scan() {
-		t := s.Text()
-		read += len(t)
-		lines = append(lines, NewLine(t, 0, " "))
-	}
 
-	fmt.Println(lines)
 }
 
-func MergeSort() {
-	arr0 := []int{23, 17, 38, 10, 190, 123, 5}
-	arr1 := []int{627, 27, 13, 87, 11, 12, 1}
-
-	mergeSort(arr0)
-	mergeSort(arr1)
-	fmt.Println(arr0)
-
-	pivo := len(arr0)
-	arr0 = append(arr0, arr1...)
-	mergeSorted(arr0, pivo)
-	fmt.Println(arr0)
-}
-
-func mergeSort(arr []int) {
+func mergeSort(arr []*line) {
 	ln := len(arr)
 
 	if ln == 1 {
@@ -68,11 +31,11 @@ func mergeSort(arr []int) {
 	mergeSort(left)
 	mergeSort(right)
 
-	mergeSorted(arr, pivo)
+	merge(arr, pivo)
 }
 
 // `arr` is assumed to consist of two non-intersecting sorted arrays
-func mergeSorted(arr []int, pivo int) {
+func merge(arr []*line, pivo int) {
 	sorted := arr[0:pivo]              // part of `arr` left of `pivo`
 	for i := pivo; i < len(arr); i++ { // TODO: Move to seperate function merge and reuse.
 		pos := bSearch(sorted, arr[i])
@@ -96,22 +59,22 @@ func mergeSorted(arr []int, pivo int) {
 
 // `arr` is assumed to be pre-sorted
 // return value is an index element should be right of
-func bSearch(arr []int, v int) int {
+func bSearch(arr []*line, v *line) int {
 
-	if arr[0] >= v {
+	if arr[0].biggerOrEquals(v) {
 		return -1 // `v` should be at 0
 	}
-	if arr[len(arr)-1] <= v {
+	if arr[len(arr)-1].smallerOrEquals(v) {
 		return len(arr) - 1 // `v` should be appended to `arr`
 	}
 
 	i, j := 0, 1
 	delta := len(arr) / 2
 	for delta > 0 {
-		eq := arr[i] == v
-		btw := (arr[i] <= v && v <= arr[j]) // `i` and `j` always differ by 1
-		big := v < arr[j]
-		sml := v > arr[i]
+		eq := arr[i].equals(v)
+		btw := arr[i].smallerOrEquals(v) && v.smallerOrEquals(arr[j]) // `i` and `j` always differ by 1
+		big := v.smaller(arr[j])
+		sml := v.bigger(arr[i])
 
 		switch {
 		case eq || btw:

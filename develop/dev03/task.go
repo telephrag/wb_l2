@@ -1,91 +1,71 @@
-package develop
+package main
 
 import (
 	"bufio"
+	"flag"
 	"log"
 	"os"
 )
 
-// Sort : TODO
-func Sort() {
-	file, err := os.Open("input.log") // TODO: pass filename as flag
+// Config
+const (
+	bufferSize = 10 // line is 4096 bytes at worst since max length of line in file is 2048 bytes
+)
+
+// Arguments
+var (
+	filePath string
+	key      int
+)
+
+func init() {
+	log.SetFlags(log.Flags() &^ (log.Ldate | log.Ltime))
+
+	flag.IntVar(&key, "k", 0,
+		"Position of column used for sorting. Lines are separated into columns by spacebar.",
+	)
+
+}
+
+func main() {
+	flag.Parse() // need to be called from inside `main()`, otherwise tests fail
+
+	if l := len(os.Args); l > 0 {
+		filePath = os.Args[l-1]
+	} else {
+		log.Fatalln("no file to sort")
+	}
+
+	file, err := os.Open(filePath)
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer file.Close()
 
 	s := bufio.NewScanner(file)
 	s.Split(bufio.ScanLines)
 
-}
+	buf := make([]*line, bufferSize)[0:0]
 
-func mergeSort(arr []*line) {
-	ln := len(arr)
-
-	if ln == 1 {
-		return
-	}
-
-	pivo := ln / 2
-
-	left, right := arr[0:pivo], arr[pivo:]
-	mergeSort(left)
-	mergeSort(right)
-
-	merge(arr, pivo)
-}
-
-// `arr` is assumed to consist of two non-intersecting sorted arrays
-func merge(arr []*line, pivo int) {
-	sorted := arr[0:pivo]              // part of `arr` left of `pivo`
-	for i := pivo; i < len(arr); i++ { // TODO: Move to seperate function merge and reuse.
-		pos := bSearch(sorted, arr[i])
-
-		switch {
-		case pos < 0:
-			temp := arr[i]                   // arr[i] should be leftmost element of `sorted`
-			copy(arr[1:], arr[:len(sorted)]) // shift right by one
-			arr[0] = temp
-		case pos == len(sorted)-1: // arr[i] should be rightmost element of `sorted`
-			continue
-		default:
-			temp := arr[i]
-			copy(arr[pos+2:], arr[pos+1:len(sorted)])
-			arr[pos+1] = temp
+	for s.Scan() {
+		if len(buf) < bufferSize {
+			buf = append(buf, newLine(s.Text(), key, " "))
+		} else {
+			mergeSort(buf)
+			writeToFile(buf)
+			buf = buf[0:0]
 		}
-
-		sorted = arr[:i+1]
 	}
+
 }
 
-// `arr` is assumed to be pre-sorted
-// return value is an index element should be right of
-func bSearch(arr []*line, v *line) int {
-
-	if arr[0].biggerOrEquals(v) {
-		return -1 // `v` should be at 0
-	}
-	if arr[len(arr)-1].smallerOrEquals(v) {
-		return len(arr) - 1 // `v` should be appended to `arr`
+func writeToFile(arr []*line) {
+	file, err := os.CreateTemp(".", ".chunk*")
+	if err != nil {
+		log.Fatalf("failed to create temporary file: %s\n", err)
 	}
 
-	i, j := 0, 1
-	delta := len(arr) / 2
-	for delta > 0 {
-		eq := arr[i].equals(v)
-		btw := arr[i].smallerOrEquals(v) && v.smallerOrEquals(arr[j]) // `i` and `j` always differ by 1
-		big := v.smaller(arr[j])
-		sml := v.bigger(arr[i])
-
-		switch {
-		case eq || btw:
-			return i
-		case big:
-			i, j = i-delta, j-delta
-		case sml:
-			i, j = i+delta, j+delta
-		}
-		delta /= 2
+	for _, l := range arr {
+		file.Write([]byte(l.line + "\n"))
 	}
-
-	return i
 }

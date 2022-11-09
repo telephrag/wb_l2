@@ -1,4 +1,4 @@
-package develop
+package main
 
 import "strings"
 
@@ -11,8 +11,9 @@ const (
 )
 
 type line struct {
-	key  string
-	line string
+	keyStart int    // index at which key column starts, -1 means there is no key
+	keyEnd   int    // index at which key column ends
+	line     string // line from a file
 }
 
 // Constructs a new `line` object.
@@ -24,33 +25,52 @@ func newLine(str string, key int, sep string) *line {
 	l.line = str
 	words := strings.Split(str, sep)
 	if len(words) > key {
-		l.key = words[key]
+		l.keyStart += key
+		var i int
+		for i = 0; i < key; i++ {
+			l.keyStart += len(words[i])
+		}
+		l.keyEnd = l.keyStart + len(words[i])
+	} else {
+		l.keyStart = -1
+		l.keyEnd = -1
 	}
 	return l
+}
+
+func (l *line) hasKey() bool {
+	return l.keyStart != -1
+}
+
+func (l *line) getKey() string {
+	if !l.hasKey() {
+		return ""
+	}
+	return l.line[l.keyStart:l.keyEnd]
 }
 
 // Returns `true` if `l` is lexicographically bigger than `other`, `false` otherwise.
 func (l *line) compare(other *line) LineCompEnum {
 
-	hasKey := l.key != ""
-	otherHasKey := other.key != ""
+	lHasKey := l.hasKey()
+	otherHasKey := other.hasKey()
 
-	if hasKey && otherHasKey {
+	if lHasKey && otherHasKey {
 		switch {
-		case l.key > other.key:
+		case l.getKey() > other.getKey():
 			return lineBigger
-		case l.key < other.key:
+		case l.getKey() < other.getKey():
 			return lineSmaller
 		default:
 			return lineEquals
 		}
 	}
 
-	if hasKey && !otherHasKey {
+	if lHasKey && !otherHasKey {
 		return lineBigger
 	}
 
-	if !hasKey && otherHasKey {
+	if !lHasKey && otherHasKey {
 		return lineSmaller
 	}
 

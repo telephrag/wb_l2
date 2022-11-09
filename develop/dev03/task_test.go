@@ -1,16 +1,11 @@
-package develop
+package main
 
 import (
-	"fmt"
 	"testing"
 )
 
-func TestDo(t *testing.T) {
-	Sort()
-}
-
 func TestMergeSort(t *testing.T) { // TODO: add checks
-	arr := []string{
+	input := []string{
 		"lol kek haha",
 		"lmao",
 		"",
@@ -20,15 +15,31 @@ func TestMergeSort(t *testing.T) { // TODO: add checks
 		"and yet another one",
 	}
 
-	lines := make([]*line, len(arr))
-	for i, s := range arr {
+	lines := make([]*line, len(input))
+	for i, s := range input {
 		lines[i] = newLine(s, 1, " ")
 	}
 
 	mergeSort(lines)
 
-	for _, l := range lines {
-		fmt.Printf("%+v\n", l)
+	expected := []string{
+		"",
+		"lmao",
+		"1 2 3 4 5",
+		"lol kek haha",
+		"some string",
+		"another string",
+		"and yet another one",
+	}
+
+	for i, l := range lines {
+		if l.line != expected[i] {
+			t.Errorf("expected \"%s\" at position %d; received \"%s\"",
+				expected[i],
+				i,
+				l.line,
+			)
+		}
 	}
 }
 

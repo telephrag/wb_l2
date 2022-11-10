@@ -35,14 +35,15 @@ func merge(arr []*line, pivo int) {
 
 		switch {
 		case pos < 0:
-			temp := arr[i]                   // arr[i] should be leftmost element of `sorted`
-			copy(arr[1:], arr[:len(sorted)]) // shift right by one
+			temp := arr[i]          // arr[i] should be leftmost element of `sorted`
+			copy(arr[1:], arr[0:i]) // shift right by one
 			arr[0] = temp
 		case pos == len(sorted)-1: // arr[i] should be rightmost element of `sorted`
+			sorted = arr[:i+1]
 			continue
 		default:
 			temp := arr[i]
-			copy(arr[pos+2:], arr[pos+1:len(sorted)])
+			copy(arr[pos+2:], arr[pos+1:i])
 			arr[pos+1] = temp
 		}
 

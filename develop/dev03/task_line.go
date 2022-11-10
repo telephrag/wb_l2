@@ -1,6 +1,8 @@
 package main
 
-import "strings"
+import (
+	"strings"
+)
 
 type LineCompEnum int
 
@@ -25,12 +27,12 @@ func newLine(str string, key int, sep string) *line {
 	l.line = str
 	words := strings.Split(str, sep)
 	if len(words) > key {
-		l.keyStart += key
+		l.keyStart += key // adding amount of spacebars to keyStart
 		var i int
 		for i = 0; i < key; i++ {
-			l.keyStart += len(words[i])
+			l.keyStart += len(words[i]) // adding length of all words before key column
 		}
-		l.keyEnd = l.keyStart + len(words[i])
+		l.keyEnd = l.keyStart + len(words[i]) // adding length of key column itself
 	} else {
 		l.keyStart = -1
 		l.keyEnd = -1

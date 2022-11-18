@@ -1,18 +1,17 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 )
 
-func TestMinor(t *testing.T) {
-	a := newLine("9188}", 0, " ")
-	b := newLine("9065}", 0, " ")
-	fmt.Println(a.bigger(b))
+// func TestMinor(t *testing.T) {
+// 	a := newLine("9188}", 0, -1, " ")
+// 	b := newLine("9065}", 0, -1, " ")
+// 	fmt.Println(a.Bigger(b))
 
-	a.line = "9628}"
-	fmt.Println(a.bigger(b))
-}
+// 	a.line = "9628}"
+// 	fmt.Println(a.Bigger(b))
+// }
 
 func TestMergeSort(t *testing.T) { // TODO: add checks
 	input := []string{
@@ -25,9 +24,9 @@ func TestMergeSort(t *testing.T) { // TODO: add checks
 		"and yet another one",
 	}
 
-	lines := make([]*line, len(input))
+	lines := make([]*Line, len(input))
 	for i, s := range input {
-		lines[i] = newLine(s, 1, " ")
+		lines[i] = newLine(s, 1, i, " ")
 	}
 
 	mergeSort(lines)
@@ -52,27 +51,6 @@ func TestMergeSort(t *testing.T) { // TODO: add checks
 		}
 	}
 
-	// input = []string{
-	// 	"1",
-	// 	"2",
-	// 	"1",
-	// 	"1",
-	// 	"2",
-	// 	"1",
-	// 	"6",
-	// 	"1",
-	// 	"1",
-	// 	"2",
-	// }
-	// lines = make([]*line, len(input))
-	// for i, s := range input {
-	// 	lines[i] = newLine(s, 1, " ")
-	// }
-	// mergeSort(lines)
-	// for _, l := range lines {
-	// 	fmt.Println(l.line)
-	// }
-
 	input = []string{
 		"{\"thread\": 5, \"timestamp\": 2022-11-08 13:50:17.461054186 +0400 +04 m=+0.006923689, \"result\": 3540}",
 		"{\"thread\": 3, \"timestamp\": 2022-11-08 13:50:17.461014326 +0400 +04 m=+0.006883838, \"result\": 2375}",
@@ -85,38 +63,14 @@ func TestMergeSort(t *testing.T) { // TODO: add checks
 		"{\"thread\": 4, \"timestamp\": 2022-11-08 13:50:17.460997261 +0400 +04 m=+0.006866774, \"result\": 9385}",
 		"{\"thread\": 3, \"timestamp\": 2022-11-08 13:50:17.461077844 +0400 +04 m=+0.006947346, \"result\": 3316}",
 	}
-	lines = make([]*line, len(input))
+	lines = make([]*Line, len(input))
 	for i, s := range input {
-		lines[i] = newLine(s, 9, " ")
+		lines[i] = newLine(s, 9, i, " ")
 	}
 	mergeSort(lines)
-	for _, l := range lines {
-		fmt.Println(l.getKey())
-	}
-}
-
-func TestTournamentTree(t *testing.T) { // TODO: Add checks
-	input := []*HeapElem{
-		{nil, &line{04, 7, "lol kek haha"}},
-		{nil, &line{-1, 0, "lmao"}},
-		{nil, &line{02, 3, "1 2 3 4 5"}},
-		{nil, &line{-1, 0, ""}},
-		{nil, &line{5, 11, "some string"}},
-		{nil, &line{8, 14, "another string"}},
-		{nil, &line{04, 7, "and yet another one"}},
-	}
-
-	// expected := []HeapElem{
-	// 	{nil, &line{-1, 0, ""}},
-	// 	{nil, &line{-1, 0, "lmao"}},
-	// 	{nil, &line{04, 7, "lol kek haha"}},
-	// 	{nil, &line{5, 11, "some string"}},
-	// 	{nil, &line{8, 14, "another string"}},
-	// 	{nil, &line{04, 7, "and yet another one"}},
+	// for _, l := range lines {
+	// 	fmt.Println(l.GetKey())
 	// }
-
-	buildTournamentTree(input)
-
 }
 
 // func TestBSearch(t *testing.T) { // TODO: add checks
@@ -129,3 +83,26 @@ func TestTournamentTree(t *testing.T) { // TODO: Add checks
 // 	arr = []int{5, 6, 7, 8}
 // 	fmt.Println(bSearch(arr, 4))
 // }
+
+func TestTournamentTree(t *testing.T) { // TODO: Add checks
+	input := []string{
+		"{\"thread\": 6, \"timestamp\": 2022-11-08 13:50:17.460267568 +0400 +04 m=+0.006137081, \"result\": 7698}", // these two
+		"{\"thread\": 2, \"timestamp\": 2022-11-08 13:50:17.460682015 +0400 +04 m=+0.006551527, \"result\": 2440}", //
+		"{\"thread\": 6, \"timestamp\": 2022-11-08 13:50:17.460784652 +0400 +04 m=+0.006654164, \"result\": 7308}", // then this one
+		"{\"thread\": 5, \"timestamp\": 2022-11-08 13:50:17.460492983 +0400 +04 m=+0.006362486, \"result\": 7289}",
+		"{\"thread\": 2, \"timestamp\": 2022-11-08 13:50:17.460304443 +0400 +04 m=+0.006173945, \"result\": 7174}",
+		"{\"thread\": 2, \"timestamp\": 2022-11-08 13:50:17.460608236 +0400 +04 m=+0.006477738, \"result\": 7086}",
+		"{\"thread\": 5, \"timestamp\": 2022-11-08 13:50:17.460803701 +0400 +04 m=+0.006673213, \"result\": 2572}",
+		"{\"thread\": 1, \"timestamp\": 2022-11-08 13:50:17.46064465 +0400 +04 m=+0.006514282, \"result\": 7082}",
+	}
+
+	sources := make([]*LineStack, len(input))
+	for i := range input {
+		sources[i] = &LineStack{current: newLine(input[i], 9, i, " ")}
+	}
+
+	tree := buildTournamentTree(sources)
+
+	tree = popTopAndUpdate(tree, sources)
+
+}

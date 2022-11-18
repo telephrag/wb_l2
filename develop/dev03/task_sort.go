@@ -1,6 +1,6 @@
 package main
 
-func mergeSort(arr []*line) {
+func mergeSort(arr []*Line) {
 	ln := len(arr)
 
 	if ln == 1 {
@@ -17,14 +17,14 @@ func mergeSort(arr []*line) {
 }
 
 // `arr` is assumed to consist of two non-intersecting sorted arrays
-func merge(arr []*line, pivo int) {
+func merge(arr []*Line, pivo int) {
 
-	var sorted []*line
+	var sorted []*Line
 	if pivo >= len(arr)/2 {
 		sorted = arr[:pivo] // part of `arr` left of `pivo`
 	} else {
 		// swaping arrays
-		temp := make([]*line, pivo)
+		temp := make([]*Line, pivo)
 		copy(temp, arr[:pivo])
 		copy(arr, arr[pivo:])
 		pivo = len(arr) - pivo
@@ -53,32 +53,42 @@ func merge(arr []*line, pivo int) {
 
 // `arr` is assumed to be pre-sorted
 // return value is an index element should be right of
-func bSearch(arr []*line, v *line) int {
+func bSearch(arr []*Line, v *Line) int {
 
-	if arr[0].biggerOrEquals(v) {
+	// Find rightmost element smaller than `v`
+
+	// i := len(arr) / 2
+	// delta := i / 2
+
+	// for !btw && !eq {}
+
+	if arr[0].BiggerOrEquals(v) {
 		return -1 // `v` should be at 0
 	}
-	if arr[len(arr)-1].smallerOrEquals(v) {
+	if arr[len(arr)-1].SmallerOrEquals(v) {
 		return len(arr) - 1 // `v` should be appended to `arr`
 	}
 
 	i, j := 0, 1
 	delta := len(arr) / 2
-	for delta > 0 {
-		eq := arr[i].equals(v)
-		btw := arr[i].smallerOrEquals(v) && v.smallerOrEquals(arr[j]) // `i` and `j` always differ by 1
-		big := v.smaller(arr[j])
-		sml := v.bigger(arr[i])
+	btw := func() bool {
+		return arr[i].SmallerOrEquals(v) && v.SmallerOrEquals(arr[i+1])
+	}
+	eq := func() bool {
+		return arr[i].Equals(v)
+	}
+
+	for !eq() && !btw() && j < len(arr) {
+		big := v.Smaller(arr[j])
+		sml := v.Bigger(arr[i])
 
 		switch {
-		case eq || btw:
-			return i
 		case big:
 			i, j = i-delta, j-delta
 		case sml:
 			i, j = i+delta, j+delta
 		}
-		delta /= 2
+		delta = delta/2 + delta%2
 	}
 
 	return i
